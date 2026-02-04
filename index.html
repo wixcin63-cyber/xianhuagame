@@ -118,7 +118,8 @@
 
         const App = () => {
             const [isUnlocked, setIsUnlocked] = useState(() => {
-                return localStorage.getItem('universe_unlocked') === 'true';
+                // Change key to v2 to force re-lock for everyone
+                return localStorage.getItem('universe_unlocked_v2') === 'true';
             });
             const [stage, setStage] = useState('cover'); // cover, landing, testing, milestone, calculating, result, poster
             const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -132,7 +133,7 @@
             if (!isUnlocked) {
                 return <GateKeeper onUnlock={() => {
                     setIsUnlocked(true);
-                    localStorage.setItem('universe_unlocked', 'true');
+                    localStorage.setItem('universe_unlocked_v2', 'true');
                 }} />;
             }
 
