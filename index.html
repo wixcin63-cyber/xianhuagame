@@ -38,7 +38,89 @@
             History: HistoryIcon, WifiOff, X, QrCode, Stars, Wand2, MessageCircleHeart 
         } = LucideReact;
 
+        const GateKeeper = ({ onUnlock }) => {
+            const [code, setCode] = useState('');
+            const [error, setError] = useState('');
+            const [shake, setShake] = useState(false);
+
+            const handleSubmit = () => {
+                if (code.trim() === 'yuzhouwansui') {
+                    onUnlock();
+                } else {
+                    setError('宇宙暗号错误，请重新校准频率');
+                    setShake(true);
+                    setTimeout(() => setShake(false), 500);
+                }
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#FDF8F7] text-[#2A2422]">
+                    <div className="max-w-md w-full space-y-12 text-center">
+                        <div className="space-y-4">
+                             <div className="flex justify-center mb-6">
+                                <Sparkles className="w-12 h-12 text-[#C5A391] animate-pulse" />
+                            </div>
+                            <h1 className="text-4xl font-light tracking-[0.4em] text-[#2A2422] uppercase">潜意识重逢</h1>
+                            <p className="text-[#7A6F6C] tracking-[0.2em] text-sm uppercase">显化测试 · 灵魂蓝图 (v1.0.1)</p>
+                        </div>
+
+                        <div className="space-y-8 py-8 border-y border-[#C5A391]/20">
+                            <div className="flex items-center gap-4 text-left px-4">
+                                 <div className="p-3 bg-[#fff] rounded-full shadow-sm"><Zap className="w-5 h-5 text-[#C5A391]" /></div>
+                                 <div>
+                                    <h3 className="font-bold tracking-widest text-[#2A2422]">8维能量分析</h3>
+                                    <p className="text-xs text-[#7A6F6C] mt-1">深度解析你的显化卡点与天赋</p>
+                                 </div>
+                            </div>
+                            <div className="flex items-center gap-4 text-left px-4">
+                                 <div className="p-3 bg-[#fff] rounded-full shadow-sm"><Gem className="w-5 h-5 text-[#C5A391]" /></div>
+                                 <div>
+                                    <h3 className="font-bold tracking-widest text-[#2A2422]">专属显化工具</h3>
+                                    <p className="text-xs text-[#7A6F6C] mt-1">获取为你定制的潜意识补丁</p>
+                                 </div>
+                            </div>
+                             <div className="flex items-center gap-4 text-left px-4">
+                                 <div className="p-3 bg-[#fff] rounded-full shadow-sm"><MapIcon className="w-5 h-5 text-[#C5A391]" /></div>
+                                 <div>
+                                    <h3 className="font-bold tracking-widest text-[#2A2422]">灵魂身份画像</h3>
+                                    <p className="text-xs text-[#7A6F6C] mt-1">生成你的宇宙通行证海报</p>
+                                 </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <p className="text-[#7A6F6C] text-sm tracking-widest">请输入宇宙通行码开启旅程</p>
+                            <div className={`relative transition-transform duration-100 ${shake ? 'translate-x-[-5px]' : ''}`}>
+                                <input 
+                                    type="text" 
+                                    value={code}
+                                    onChange={(e) => {
+                                        setCode(e.target.value);
+                                        setError('');
+                                    }}
+                                    placeholder="CODE"
+                                    className="w-full bg-white border border-[#C5A391]/30 p-4 text-center tracking-[0.2em] focus:outline-none focus:border-[#C5A391] transition-all rounded-sm text-[#2A2422] placeholder:text-[#E5Ddd9]"
+                                />
+                            </div>
+                             {error && <p className="text-[#D45D5D] text-xs tracking-widest animate-fade-in">{error}</p>}
+                            
+                            <button 
+                                onClick={handleSubmit}
+                                className="w-full bg-[#2A2422] text-[#FDF8F7] py-4 tracking-[0.5em] uppercase hover:bg-[#4A4442] transition-colors duration-500 rounded-sm text-sm"
+                            >
+                                开启宇宙
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         const App = () => {
+            const [isUnlocked, setIsUnlocked] = useState(() => {
+                // Change key to v2 to force re-lock for everyone
+                return localStorage.getItem('universe_unlocked_v2') === 'true';
+            });
             const [stage, setStage] = useState('cover'); // cover, landing, testing, milestone, calculating, result, poster
             const [currentQuestion, setCurrentQuestion] = useState(0);
             const [answers, setAnswers] = useState([]);
@@ -47,6 +129,13 @@
             });
             const [result, setResult] = useState(null);
             const [activeTab, setActiveTab] = useState('archetype');
+
+            if (!isUnlocked) {
+                return <GateKeeper onUnlock={() => {
+                    setIsUnlocked(true);
+                    localStorage.setItem('universe_unlocked_v2', 'true');
+                }} />;
+            }
 
             // 30道深度潜意识投射题
             const questions = [
